@@ -5,42 +5,43 @@ import (
 	"github.com/yusufpapurcu/wmi"
 )
 
-var queryDict = map[string]string{
-	"cpu":    "SELECT Name, Manufacturer, CurrentClockSpeed, ProcessorId FROM Win32_Processor",
-	"memory": "SELECT Name, Manufacturer, PartNumber, SerialNumber, Speed, DeviceLocator FROM Win32_PhysicalMemory",
-	"gpu":    "SELECT Name, AdapterCompatibility, AdapterRAM, DriverVersion, CurrentHorizontalResolution, CurrentVerticalResolution, CurrentRefreshRate FROM Win32_VideoController",
-}
+// Declare the components
+var memory []Win32_PhysicalMemory
+var cpu []Win32_Processor
+var gpu []Win32_VideoController
 
 func main() {
-	var memory []Win32_PhysicalMemory
-	var cpu []Win32_Processor
-	var gpu []Win32_VideoController
+	// Load the information into memory
+	loadSpecs()
+}
 
-	if getInfo("cpu", &cpu) {
-		for _, c := range cpu {
-			c.Parse()
-		}
-	}
-	if getInfo("memory", &memory) {
-		for _, m := range memory {
-			m.Parse()
-		}
-	}
-	if getInfo("gpu", &gpu) {
-		for _, g := range gpu {
-			g.Parse()
-		}
+// loadInfoFor for all given components
+func loadSpecs() {
+	loadInfoFor("cpu", &cpu)
+	loadInfoFor("memory", &memory)
+	loadInfoFor("gpu", &gpu)
+}
+
+// Loads the information for the given device into memory
+func loadInfoFor(name string, dst interface{}) {
+	query := getQueryFor(dst)
+	res := wmi.Query(query, dst)
+	if res != nil {
+		fmt.Println("An error occured while trying to load information for " + name + ": \n" + res.Error())
 	}
 }
 
-func getInfo(name string, dst interface{}) bool {
-	query := queryDict[name]
-	res := wmi.Query(query, dst)
-	if res != nil {
-		fmt.Println("An error occured while trying to read information for " + name + ": \n" + res.Error())
-		return false
+// Returns the query for the given component
+func getQueryFor(component interface{}) string {
+	switch component.(type) {
+	case *[]Win32_Processor:
+		return "SELECT Name, Manufacturer, CurrentClockSpeed, ProcessorId FROM Win32_Processor"
+	case *[]Win32_PhysicalMemory:
+		return "SELECT Name, Manufacturer, PartNumber, SerialNumber, Speed, DeviceLocator FROM Win32_PhysicalMemory"
+	case *[]Win32_VideoController:
+		return "SELECT Name, AdapterCompatibility, AdapterRAM, DriverVersion, CurrentHorizontalResolution, CurrentVerticalResolution, CurrentRefreshRate FROM Win32_VideoController"
 	}
-	return true
+	return ""
 }
 
 // CPU
@@ -72,7 +73,7 @@ type Win32_PhysicalMemory struct {
 func (m Win32_PhysicalMemory) Parse() {
 	fmt.Printf("Name: %s\n", m.Name)
 	fmt.Printf("Manufacturer: %s\n", m.Manufacturer)
-	fmt.Printf("Speed: %d (T/s)\n", m.Speed)
+	fmt.Printf("Speed: %d T/s\n", m.Speed)
 	fmt.Printf("Model: %s\n", m.PartNumber)
 	fmt.Printf("Serial Number: %s\n", m.SerialNumber)
 	fmt.Printf("Channel: %s\n", m.DeviceLocator)
@@ -97,6 +98,6 @@ func (g Win32_VideoController) Parse() {
 	fmt.Printf("Driver Version: %s\n", g.DriverVersion)
 	fmt.Printf("Horizontal Resolution: %d\n", g.CurrentHorizontalResolution)
 	fmt.Printf("Vertical Resolution: %d\n", g.CurrentVerticalResolution)
-	fmt.Printf("Refresh Rate: %d (Hz)\n", g.CurrentRefreshRate)
+	fmt.Printf("Refresh Rate: %d Hz\n", g.CurrentRefreshRate)
 	fmt.Println()
 }
