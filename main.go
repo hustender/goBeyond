@@ -2,9 +2,7 @@
 
 package main
 
-import (
-	"goBeyond/cmd"
-)
+import "github.com/hustender/goBeyond/cmd"
 
 func main() {
 	cmd.Execute()
