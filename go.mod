@@ -1,4 +1,4 @@
-module github.com/hustender/goBeyond
+module goBeyond
 
 go 1.23
 
