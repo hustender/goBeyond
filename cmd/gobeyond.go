@@ -89,7 +89,7 @@ func loadInfoFor(name string, dst interface{}) {
 	query := getQueryFor(dst)
 	res := wmi.Query(query, dst)
 	if res != nil {
-		fmt.Println("An error occured while trying to load information for " + name + ": \n" + res.Error())
+		fmt.Println(Error("An error occured while trying to load information for " + name + ": \n" + res.Error()))
 	}
 }
 
@@ -115,10 +115,10 @@ type Win32_Processor struct {
 }
 
 func (c Win32_Processor) Parse() {
-	fmt.Printf("Name: %s\n", c.Name)
-	fmt.Printf("Manufacturer: %s\n", c.Manufacturer)
-	fmt.Printf("Base clock speed: %d (MHz)\n", c.CurrentClockSpeed)
-	fmt.Printf("Model: %s\n", c.ProcessorId)
+	PrintInfo("Name", c.Name)
+	PrintInfo("Manufacturer", c.Manufacturer)
+	PrintNumber("Base clock speed", c.CurrentClockSpeed, "MHz")
+	PrintInfo("Model", c.ProcessorId)
 	fmt.Println()
 }
 
@@ -133,12 +133,12 @@ type Win32_PhysicalMemory struct {
 }
 
 func (m Win32_PhysicalMemory) Parse() {
-	fmt.Printf("Name: %s\n", m.Name)
-	fmt.Printf("Manufacturer: %s\n", m.Manufacturer)
-	fmt.Printf("Speed: %d T/s\n", m.Speed)
-	fmt.Printf("Model: %s\n", m.PartNumber)
-	fmt.Printf("Serial Number: %s\n", m.SerialNumber)
-	fmt.Printf("Channel: %s\n", m.DeviceLocator)
+	PrintInfo("Name", m.Name)
+	PrintInfo("Manufacturer", m.Manufacturer)
+	PrintNumber("Speed", m.Speed, "T/s")
+	PrintInfo("Model", m.PartNumber)
+	PrintInfo("Serial Number", m.SerialNumber)
+	PrintInfo("Channel", m.DeviceLocator)
 	fmt.Println()
 }
 
@@ -154,12 +154,12 @@ type Win32_VideoController struct {
 }
 
 func (g Win32_VideoController) Parse() {
-	fmt.Printf("Name: %s\n", g.Name)
-	fmt.Printf("Manufacturer: %s\n", g.AdapterCompatibility)
-	fmt.Printf("Video Memory: %d (bytes)\n", g.AdapterRAM)
-	fmt.Printf("Driver Version: %s\n", g.DriverVersion)
-	fmt.Printf("Horizontal Resolution: %d\n", g.CurrentHorizontalResolution)
-	fmt.Printf("Vertical Resolution: %d\n", g.CurrentVerticalResolution)
-	fmt.Printf("Refresh Rate: %d Hz\n", g.CurrentRefreshRate)
+	PrintInfo("Name", g.Name)
+	PrintInfo("Manufacturer", g.AdapterCompatibility)
+	PrintNumber("Video Memory", int(g.AdapterRAM)*-1, "bytes")
+	PrintInfo("Driver Version", g.DriverVersion)
+	PrintInfo("Horizontal Resolution", fmt.Sprintf("%d", g.CurrentHorizontalResolution))
+	PrintInfo("Vertical Resolution", fmt.Sprintf("%d", g.CurrentVerticalResolution))
+	PrintNumber("Refresh Rate", int(g.CurrentRefreshRate), "Hz")
 	fmt.Println()
 }

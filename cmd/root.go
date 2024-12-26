@@ -24,7 +24,8 @@ var rootCmd = &cobra.Command{
 
 func Execute() {
 	if err := rootCmd.Execute(); err != nil {
-		fmt.Fprintf(os.Stderr, "An error occured executing goBeyond \n'%s'\n", err)
+		error := Error(fmt.Sprintf("An error occured executing goBeyond \n'%s'\n", err))
+		fmt.Fprintln(os.Stderr, error)
 		os.Exit(1)
 	}
 }
