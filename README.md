@@ -32,7 +32,7 @@ go install github.com/hustender/goBeyond@latest
 goBeyond <component>
 ```
 
-## Via `git clone`:
+### Via `git clone`:
 
 1. **Clone the repository**
 ```bash
