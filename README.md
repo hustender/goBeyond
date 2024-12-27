@@ -20,7 +20,7 @@
 
 ## Installation
 
-### Via `go install`
+### Via `go install`:
 
 1. **Install the package**:
 ```bash
